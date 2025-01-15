@@ -1,6 +1,6 @@
-# Child Growth Monitor
+# Feeding India - Child Growth Monitor
 
-A modern web application for monitoring and analyzing children's growth patterns using WHO standards. Built with Next.js, React, and TailwindCSS.
+A modern web application for monitoring and analyzing children's growth patterns using WHO standards. Built with Next.js, React, Supabase, and TailwindCSS.
 
 ## Features
 
