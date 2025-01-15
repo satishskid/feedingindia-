@@ -3,53 +3,38 @@ import { Line } from 'react-chartjs-2';
 import { defaultChartOptions } from '../../utils/chartConfig';
 import { Chart } from 'chart.js';
 import annotationPlugin from 'chartjs-plugin-annotation';
+import { useInterventions } from '../../hooks/useInterventions';
+import { Intervention } from '../../types/database';
 
 Chart.register(annotationPlugin);
 
-type InterventionData = {
-  id: string;
-  name: string;
-  startDate: string;
-  type: 'nutrition' | 'medical' | 'behavioral';
-  description: string;
-  impact: number;
+// Date formatting utility
+const formatDate = (dateString: string) => {
+  const date = new Date(dateString);
+  return date.toLocaleDateString('en-US', { 
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    timeZone: 'UTC'
+  });
 };
-
-// Mock data - replace with actual data from your API
-const mockInterventions: InterventionData[] = [
-  {
-    id: '1',
-    name: 'Nutrition Program A',
-    startDate: '2024-06-01',
-    type: 'nutrition',
-    description: 'Supplementary feeding program',
-    impact: 0.8,
-  },
-  {
-    id: '2',
-    name: 'Medical Checkup',
-    startDate: '2024-07-15',
-    type: 'medical',
-    description: 'Regular health monitoring',
-    impact: 0.5,
-  },
-  {
-    id: '3',
-    name: 'Behavioral Program',
-    startDate: '2024-08-01',
-    type: 'behavioral',
-    description: 'Parent education program',
-    impact: 0.6,
-  },
-];
 
 const InterventionsAnalysis = () => {
   const [selectedType, setSelectedType] = useState<'all' | 'nutrition' | 'medical' | 'behavioral'>('all');
+  const { interventions, loading, error, addIntervention } = useInterventions();
+
+  if (loading) {
+    return <div className="flex justify-center items-center h-screen">Loading...</div>;
+  }
+
+  if (error) {
+    return <div className="text-red-500 p-4">{error}</div>;
+  }
 
   // Filter interventions based on selected type
   const filteredInterventions = selectedType === 'all' 
-    ? mockInterventions 
-    : mockInterventions.filter(i => i.type === selectedType);
+    ? interventions 
+    : interventions.filter(i => i.type === selectedType);
 
   // Prepare chart data
   const chartData = {
@@ -143,7 +128,7 @@ const InterventionsAnalysis = () => {
             </div>
             <p className="text-sm text-gray-600 mb-2">{intervention.description}</p>
             <div className="flex justify-between text-sm">
-              <span className="text-gray-500">Started: {new Date(intervention.startDate).toLocaleDateString()}</span>
+              <span className="text-gray-500">Started: {formatDate(intervention.startDate)}</span>
               <span className="text-gray-500">Impact: {(intervention.impact * 100).toFixed(0)}%</span>
             </div>
           </div>
